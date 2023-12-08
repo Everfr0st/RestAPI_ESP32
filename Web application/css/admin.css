@@ -1,0 +1,4 @@
+.table-responsive {
+    max-height: 250px; /* Establece la altura máxima para el desplazamiento */
+    overflow-y: auto; /* Permite desplazamiento vertical si la tabla es más alta que el contenedor */
+  }

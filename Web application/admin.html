@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin home</title>
+    <link
+      rel="canonical"
+      href="https://getbootstrap.com/docs/5.0/examples/pricing/"
+    />
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+    crossorigin="anonymous"/>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" href="./css/admin.css">
+  <style>
+    .table-responsive {
+    max-height: 300px; /* Establece la altura máxima para el desplazamiento */
+    overflow-y: auto; /* Permite desplazamiento vertical si la tabla es más alta que el contenedor */
+  }
+
+  </style>
+</head>
+<body>
+        <div class="container py-3">
+          <header>
+            <div
+              class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom"
+            >
+              <a
+                href=""
+                class="d-flex align-items-center text-dark text-decoration-none"
+              >
+                <img src="./images/logo_2.png" style="width: 90px" alt="logo" />
+                <span class="fs-4">Ingeniería ante incendios</span>
+              </a>
+    
+              <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+                
+                <!-- <a class="me-3 py-2 text-dark text-decoration-none" href="oficina1.html"
+                  >Oficina 1</a
+                >
+                <a class="me-3 py-2 text-dark text-decoration-none" href="oficina2.html"
+                  >Oficina 2</a
+                >
+                <a class="me-3 py-2 text-dark text-decoration-none" href="pasillo.html"
+                  >Pasillo</a
+                > -->
+                <a class="me-3 py-2 text-dark text-decoration-none" href="admin.html"
+                ><h5>|  Bienvenido administrador  |</h5></a> 
+
+                <a class="me-3 py-2 text-dark text-decoration-none" href="crear.html"
+                ><h5>| Crear usuario |</h5></a> 
+
+                <a class="me-3 py-2 text-dark text-decoration-none" href="index.html"
+                  ><h5>| Salir |</h5></a> 
+              </nav>
+            </div>
+
+            <h2 class="display-6 text-center mb-4">Todos los usuarios</h2>
+
+        <div class="table-responsive">
+          <table class="table text-center" id="tabla-datos">
+            <thead>
+              <tr>
+                <th scope="col">USERNAME</th>
+                <th scope="col">NOMBRE</th>
+                <th scope="col">TIPO</th>
+                <th scope="col">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <br>
+          
+          <div class="mt-4">
+            <h2 class="display-6 text-center mb-4">Actualizar Usuario</h2>
+            <form id="updateForm">
+              <div class="mb-3">
+                <label for="updatedUsername" class="form-label">Username del usuario que desea actualizar</label>
+                <input type="text" class="form-control" id="updatedUsername">
+              </div>
+              <div class="mb-3">
+                <label for="updatedNombre" class="form-label">Nuevo Nombre</label>
+                <input type="text" class="form-control" id="updatedNombre">
+              </div>
+              <div class="mb-3">
+                <label for="updatedTipo" class="form-label">Nuevo Tipo</label>
+                <input type="text" class="form-control" id="updatedTipo">
+              </div>
+              <button type="button" class="btn btn-primary" onclick="submitUpdate()">Guardar cambios</button>
+            </form>
+          </div>
+
+        <script>
+            const url = "http://20.42.107.153:3000/usuarios";
+
+            fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                const tbody = document.querySelector("#tabla-datos tbody");
+
+                data.reverse();
+
+                data.forEach((obj) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${obj.username}</td><td>${obj.nombre}</td><td>${obj.tipo}</td><td>
+                                <button class="btn btn-warning btn-sm" onclick="updateUser('${obj.username}')">Actualizar</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser('${obj.username}')">Borrar</button>
+                            </td>`;
+                tbody.appendChild(tr);
+                });
+            })
+            .catch((error) => console.error(error));
+
+
+
+        function updateUser(username, nombre, tipo) {
+            document.getElementById('updatedUsername').value = username;
+            document.getElementById('updatedNombre').value = nombre;
+            document.getElementById('updatedTipo').value = tipo;
+        }
+
+        function submitUpdate() {
+            const updatedUsername = document.getElementById('updatedUsername').value;
+            const updatedNombre = document.getElementById('updatedNombre').value;
+            const updatedTipo = document.getElementById('updatedTipo').value;
+
+            const updatedUser = {
+            username: updatedUsername,
+            nombre: updatedNombre,
+            tipo: updatedTipo,
+            };
+
+            // Enviar la solicitud PUT a la API
+            fetch(`http://20.42.107.153:3000/usuarios/${updatedUsername}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser),
+            })
+            //.then((response) => response.json())
+            .then((data) => {
+                alert("Usuario actualizado"); // Muestra la respuesta del servidor
+                location.reload(); // Recargar la página después de la actualización
+            })
+            .catch((error) => console.error(error));
+        }
+
+        function deleteUser(username) {
+            // Lógica para borrar usuario
+            const confirmation = confirm(`¿Seguro que deseas eliminar al usuario ${username}?`);
+            if (confirmation) {
+            // Realizar la eliminación llamando a la API DELETE
+            fetch(`http://20.42.107.153:3000/usuarios/${username}`, {
+                method: 'DELETE',
+            })
+                //.then((response) => response.json())
+                .then((data) => {
+                alert("Usuario eliminado"); // Muestra la respuesta del servidor (puedes personalizarlo según la respuesta que envíes desde el servidor)
+                location.reload(); // Recargar la página después de eliminar el usuario
+                })
+                .catch((error) => console.error(error));
+            }
+        }
+          </script>
+          <!-- Bootstrap CSS -->
+
+</body>
+</html>
